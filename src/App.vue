@@ -1,16 +1,13 @@
 <template>
-<h1>Hello world</h1>
-<router-view></router-view>
+  <h1>Ceramic Dreams</h1>
+  <div class="page-wrap"><router-view></router-view></div>
 </template>
 
 <script>
-
 export default {
-  name: 'App',
-  components: {
-
-  }
-}
+  name: "App",
+  components: {},
+};
 </script>
 
 <style>
