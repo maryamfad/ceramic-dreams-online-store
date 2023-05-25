@@ -8,7 +8,7 @@ import {
 let cartItems = cartItemsRaw;
 let products = productsRaw;
 
-require('dotenv').config()
+require("dotenv").config();
 const app = express();
 
 app.use(express.json());
@@ -27,11 +27,19 @@ app.get("/products", async (req, res) => {
   res.json(products);
 });
 
-const populatedCartIds = (ids) => {
-  return ids.map((id) => products.find((p) => p.id === id));
+const populatedCartIds = async(ids) => {
+  await dbClient.connect();
+  const db = dbClient.db("ceramic-dreams-db");
+  return Promise.all(
+    ids.map((id) => db.collection("products").findOne({ id }))
+  );
 };
-app.get("/cart", (req, res) => {
-  const populatedCart = populatedCartIds(cartItems);
+app.get("/users/:userId/cart", async (req, res) => {
+  const userId = req.params.userId;
+  await dbClient.connect();
+  const db = dbClient.db("ceramic-dreams-db");
+  const user = await db.collection("users").findOne({ id: userId });
+  const populatedCart = await populatedCartIds(user.cartItems);
   res.json(populatedCart);
 });
 
