@@ -35,7 +35,7 @@ async function main() {
   app.get("/users/:userId/cart", async (req, res) => {
     const userId = req.params.userId;
     const user = await db.collection("users").findOne({ id: userId });
-    const populatedCart = await populatedCartIds(user.cartItems);
+    const populatedCart = await populateCartIds(user.cartItems);
     res.json(populatedCart);
   });
 
@@ -64,10 +64,20 @@ async function main() {
     res.json(populatedCart);
   });
 
-  app.delete("/cart/:productId", (req, res) => {
+  app.delete("/users/:userId/cart/:productId", async (req, res) => {
+    const userId = req.params.userId;
     const productId = req.params.productId;
-    const remainingCartItems = cartItems.filter((id) => id !== productId);
-    const populatedCart = populatedCartIds(remainingCartItems);
+
+    await db.collection("users").updateOne(
+      { id: userId },
+      {
+        $pull: { cartItems: productId },
+      }
+    );
+    const user = await db
+      .collection("users")
+      .findOne({ id: req.params.userId });
+    const populatedCart = await populateCartIds(user.cartItems);
     res.json(populatedCart);
   });
   app.listen(8000, () => {
