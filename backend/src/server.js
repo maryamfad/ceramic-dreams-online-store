@@ -1,14 +1,7 @@
 import express from "express";
 import { MongoClient } from "mongodb";
-import {
-  cartItems as cartItemsRaw,
-  products as productsRaw,
-} from "./temp-data";
-
-let cartItems = cartItemsRaw;
-let products = productsRaw;
+require("dotenv").config();
 async function main() {
-  require("dotenv").config();
   const app = express();
 
   app.use(express.json());
@@ -22,7 +15,7 @@ async function main() {
     res.send("Healthy!");
   });
 
-  app.get("/products", async (req, res) => {
+  app.get("/api/products", async (req, res) => {
     const products = await db.collection("products").find({}).toArray();
     res.json(products);
   });
@@ -32,21 +25,21 @@ async function main() {
       ids.map((id) => db.collection("products").findOne({ id }))
     );
   };
-  app.get("/users/:userId/cart", async (req, res) => {
+  app.get("/api/users/:userId/cart", async (req, res) => {
     const userId = req.params.userId;
     const user = await db.collection("users").findOne({ id: userId });
     const populatedCart = await populateCartIds(user.cartItems);
     res.json(populatedCart);
   });
 
-  app.get("/products/:productId", async (req, res) => {
+  app.get("/api/products/:productId", async (req, res) => {
     const productId = req.params.productId;
 
     const product = await db.collection("products").findOne({ id: productId });
     res.json(product);
   });
 
-  app.post("/users/:userId/cart", async (req, res) => {
+  app.post("/api/users/:userId/cart", async (req, res) => {
     const userId = req.params.userId;
     const productId = req.body.id;
 
@@ -64,7 +57,7 @@ async function main() {
     res.json(populatedCart);
   });
 
-  app.delete("/users/:userId/cart/:productId", async (req, res) => {
+  app.delete("/api/users/:userId/cart/:productId", async (req, res) => {
     const userId = req.params.userId;
     const productId = req.params.productId;
 
