@@ -1,11 +1,13 @@
 import express from "express";
 import { MongoClient } from "mongodb";
+import path from 'path'
+
 require("dotenv").config();
 async function main() {
   const app = express();
 
   app.use(express.json());
-
+app.use('/images', express.static(path.join(__dirname, '../assets')))
   const dbUrl = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.74roz0k.mongodb.net/?retryWrites=true&w=majority`;
   const dbClient = new MongoClient(dbUrl);
   await dbClient.connect();
