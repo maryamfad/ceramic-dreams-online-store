@@ -92,12 +92,13 @@ h1 {
 
 .grey-button {
   background-color: #888;
+  width: 100%;
 }
 
 .nav-bar {
   border-bottom: 1px solid #ddd;
   height: 75px;
-  /* width: 100%; */
+  width: 100%;
 }
 
 .logo-wrap {
@@ -128,7 +129,7 @@ h1 {
 
 .grid-wrap {
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   gap: 16px;
   flex-wrap: wrap;
   margin-top: 16px;
