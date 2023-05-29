@@ -11,7 +11,6 @@
 
 <script>
 import axios from 'axios';
-// import { cartItems } from "../temp-data";
 import ShoppingCartList from "@/components/ShoppingCartList.vue";
 
 export default {
