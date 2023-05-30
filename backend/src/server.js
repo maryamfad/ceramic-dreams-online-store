@@ -30,7 +30,7 @@ app.use('/images', express.static(path.join(__dirname, '../assets')))
   app.get("/api/users/:userId/cart", async (req, res) => {
     const userId = req.params.userId;
     const user = await db.collection("users").findOne({ id: userId });
-    const populatedCart = await populateCartIds(user.cartItems);
+    const populatedCart = await populateCartIds(user?.cartItems ||[]);
     res.json(populatedCart);
   });
 
@@ -55,7 +55,7 @@ app.use('/images', express.static(path.join(__dirname, '../assets')))
     const user = await db
       .collection("users")
       .findOne({ id: req.params.userId });
-    const populatedCart = await populateCartIds(user.cartItems);
+    const populatedCart = await populateCartIds(user?.cartItems || []);
     res.json(populatedCart);
   });
 
@@ -72,7 +72,7 @@ app.use('/images', express.static(path.join(__dirname, '../assets')))
     const user = await db
       .collection("users")
       .findOne({ id: req.params.userId });
-    const populatedCart = await populateCartIds(user.cartItems);
+    const populatedCart = await populateCartIds(user?.cartItems|| []);
     res.json(populatedCart);
   });
   app.listen(8000, () => {

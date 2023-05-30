@@ -5,13 +5,19 @@
         <img :src="product.imageURL" />
         <h1>{{ product.name }}</h1>
         <h3 class="price">{{ product.price }}</h3>
-        <button @click="addToCart" class="add-to-cart" v-if="!isItemInCart">
+        <button
+          @click="addToCart"
+          class="add-to-cart"
+          v-if="user && !isItemInCart"
+        >
           Add to cart
         </button>
-        <button class="grey-button" v-if="isItemInCart">
+        <button class="grey-button" v-if="user && isItemInCart">
           Item is already in cart!
         </button>
-        <button class="sign-in" @click="signIn">Sign in to add to cart</button>
+        <button class="sign-in" @click="signIn" v-if="!user">
+          Sign in to add to cart
+        </button>
       </div>
     </div>
   </div>
@@ -31,6 +37,7 @@ import axios from "axios";
 import NotFoundPage from "./NotFoundPage.vue";
 export default {
   name: "ProductDetailPage",
+  props: ["user"],
   data() {
     return {
       product: {},
@@ -43,6 +50,15 @@ export default {
         (item) => item.id === this.$route.params.productId
       );
     },
+  },
+  watch:{
+async user(newUserValue){
+  if (newUserValue) {
+      const cartResponse = await axios.get(`/api/users/${newUserValue.uid}/cart`);
+      const cartItems = cartResponse.data;
+      this.cartItems = cartItems;
+    }
+}
   },
   methods: {
     async addToCart() {
@@ -72,8 +88,8 @@ export default {
     if (isSignInWithEmailLink(auth, window.location.href)) {
       const email = window.localStorage.getItem("emailForSignIn");
       await signInWithEmailLink(auth, email, window.location.href);
-      alert('Successfully signed in!');
-      window.localStorage.removeItem('emailForSignIn');
+      alert("Successfully signed in!");
+      window.localStorage.removeItem("emailForSignIn");
     }
 
     const response = await axios.get(
@@ -81,10 +97,11 @@ export default {
     );
     const product = response.data;
     this.product = product;
-
-    const cartResponse = await axios.get("/api/users/12345/cart");
-    const cartItems = cartResponse.data;
-    this.cartItems = cartItems;
+    if (this.user) {
+      const cartResponse = await axios.get(`/api/users/${this.user.uid}/cart`);
+      const cartItems = cartResponse.data;
+      this.cartItems = cartItems;
+    }
   },
 };
 </script>
