@@ -51,18 +51,20 @@ export default {
       );
     },
   },
-  watch:{
-async user(newUserValue){
-  if (newUserValue) {
-      const cartResponse = await axios.get(`/api/users/${newUserValue.uid}/cart`);
-      const cartItems = cartResponse.data;
-      this.cartItems = cartItems;
-    }
-}
+  watch: {
+    async user(newUserValue) {
+      if (newUserValue) {
+        const cartResponse = await axios.get(
+          `/api/users/${newUserValue.uid}/cart`
+        );
+        const cartItems = cartResponse.data;
+        this.cartItems = cartItems;
+      }
+    },
   },
   methods: {
     async addToCart() {
-      await axios.post("/api/users/12345/cart", {
+      await axios.post(`/api/users/${this.user.uid}/cart`, {
         id: this.$route.params.productId,
       });
       alert("Successfully added item to the cart!");

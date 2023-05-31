@@ -47,7 +47,7 @@ async function main() {
 
     const existingUser = await db.collection("users").findOne({ id: userId });
     if (!existingUser) {
-      await db.collection("user").insertOne({ id: userId, cartItems: [] });
+      await db.collection("users").insertOne({ id: userId, cartItems: [] });
     }
     await db.collection("users").updateOne(
       { id: userId },
