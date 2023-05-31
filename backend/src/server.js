@@ -1,13 +1,13 @@
 import express from "express";
 import { MongoClient } from "mongodb";
-import path from 'path'
+import path from "path";
 
 require("dotenv").config();
 async function main() {
   const app = express();
 
   app.use(express.json());
-app.use('/images', express.static(path.join(__dirname, '../assets')))
+  app.use("/images", express.static(path.join(__dirname, "../assets")));
   const dbUrl = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.74roz0k.mongodb.net/?retryWrites=true&w=majority`;
   const dbClient = new MongoClient(dbUrl);
   await dbClient.connect();
@@ -30,7 +30,7 @@ app.use('/images', express.static(path.join(__dirname, '../assets')))
   app.get("/api/users/:userId/cart", async (req, res) => {
     const userId = req.params.userId;
     const user = await db.collection("users").findOne({ id: userId });
-    const populatedCart = await populateCartIds(user?.cartItems ||[]);
+    const populatedCart = await populateCartIds(user?.cartItems || []);
     res.json(populatedCart);
   });
 
@@ -45,6 +45,10 @@ app.use('/images', express.static(path.join(__dirname, '../assets')))
     const userId = req.params.userId;
     const productId = req.body.id;
 
+    const existingUser = await db.collection("users").findOne({ id: userId });
+    if (!existingUser) {
+      await db.collection("user").insertOne({ id: userId, cartItems: [] });
+    }
     await db.collection("users").updateOne(
       { id: userId },
       {
@@ -72,7 +76,7 @@ app.use('/images', express.static(path.join(__dirname, '../assets')))
     const user = await db
       .collection("users")
       .findOne({ id: req.params.userId });
-    const populatedCart = await populateCartIds(user?.cartItems|| []);
+    const populatedCart = await populateCartIds(user?.cartItems || []);
     res.json(populatedCart);
   });
   app.listen(8000, () => {
