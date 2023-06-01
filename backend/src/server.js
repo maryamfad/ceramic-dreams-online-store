@@ -7,11 +7,17 @@ async function main() {
   const app = express();
 
   app.use(express.json());
-  app.use("/images", express.static(path.join(__dirname, "../assets")));
+  
   const dbUrl = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.74roz0k.mongodb.net/?retryWrites=true&w=majority`;
   const dbClient = new MongoClient(dbUrl);
   await dbClient.connect();
   const db = dbClient.db("ceramic-dreams-db");
+
+  app.use("/images", express.static(path.join(__dirname, "../assets")));
+  
+app.use(express.static(path.resolve(__dirname, '../dist'), 
+{maxAge: '1y', etag: false},
+))
 
   app.get("/healthCheck", (req, res) => {
     res.send("Healthy!");
@@ -79,8 +85,14 @@ async function main() {
     const populatedCart = await populateCartIds(user?.cartItems || []);
     res.json(populatedCart);
   });
-  app.listen(8000, () => {
-    console.log("Server is listening on port 8000");
+
+  app.get('*', (req,res)=>{
+    res.sendFile(path.join(__dirname, '../dist/index.html'))
+  })
+
+  const port = process.env.PORT || 8000;
+  app.listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
   });
 }
 
